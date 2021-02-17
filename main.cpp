@@ -188,9 +188,8 @@ class bank {
   }
 
   /* validations end */
-
-
 };
+/*CLASS END*/
 
 string bank::menu(MYSQL * conn) {
   if (conn) {
@@ -312,8 +311,8 @@ string bank::bankmangement(MYSQL * conn) {
     cout << "\n\n 6. DEPOSITE AMOUNT ";
     cout << "\n\n 7. WITHDRAW AMOUNT ";
     cout << "\n\n 8. TRANSFER MONEY ";
-    cout << "\n\n 9. TRANSACATION HISTORY ";
-    cout << "\n\n 10. TRANSACATION HISTORY DOWNLOAD";
+    cout << "\n\n 9. VIEW TRANSACATION HISTORY ";
+    cout << "\n\n 10.TRANSACATION HISTORY DOWNLOAD";
     cout << "\n\n 11. goback ";
 
     cout << "\n\nENTER YOUR CHOICE: ";
@@ -399,22 +398,16 @@ string bank::insertrecord(MYSQL * conn) {
   on: MYSQL_ROW row;
   MYSQL_RES * res;
   MYSQL_RES * resss;
-
+  system("cls");
   int qstate = 0;
   int count;
-  string accno,
-  pinno;
+  string accno,pinno;
   int i = 0;
   string name;
-  string adhar,
-  email,
-  acc_type,
-  address,
-  phoneno;
+  string adhar,email,acc_type,address,phoneno;
   string amount;
-  stringstream ss,
-  sss,
-  ssss;
+  stringstream ss,sss,ssss;
+
   accno = gen_random_num(5);
 
   cout << "\n\n NEW ACCOUNT NO IS: " << accno;
@@ -607,7 +600,7 @@ string bank::deleterecord(MYSQL * conn) {
   MYSQL_RES * res;
 
   string accno;
-  stringstream ss, sss;
+  stringstream ss, sss ,sssw;
   cout << "\n\nENTER ACCOUNT NO : ";
   cin >> accno;
   sss << "select * from banking where account_no = '" + accno + "' ";
@@ -626,6 +619,11 @@ string bank::deleterecord(MYSQL * conn) {
       string query = ss.str();
       const char * q = query.c_str();
       mysql_query(conn, q);
+
+      sssw << "DELETE FROM `trans_hist` WHERE accno ='" + accno + "' ";
+      string queryy = sssw.str();
+      const char *wq = queryy.c_str();
+      mysql_query(conn, wq);
       //ss<<"DELETE FROM hacker WHERE name='"+name+"'";
       cout << "\n\nRECORD DELETED SUCESSFULLY" << row[2];
     }
@@ -1100,17 +1098,8 @@ string bank::transfer_amt(MYSQL * conn) {
   stringstream ss, sss, ssss, tss, tt, ttt;
   cout << "\n\nENTER SENDER ACCOUNT NO: ";
   cin >> acno_1;
-  cout << "\n\nENTER RECIVER ACCOUNT NO: ";
-  cin >> acno_2;
-  if (acno_1 == acno_2) {
-    cout << "\n SAME ACCOUNT NUMBERS ARE NOT ALLOWED.....";
-    getch();
-    bankmangement(conn);
-  } else {
-    goto sa;
-  }
 
-  sa:
+
 
     sss << "select * from banking where account_no = '" + acno_1 + "' ";
 
@@ -1121,8 +1110,17 @@ string bank::transfer_amt(MYSQL * conn) {
   count = mysql_num_fields(res);
   my_ulonglong x = mysql_num_rows(res);
 
-  ssss << "select * from banking where account_no = '" + acno_2 + "' ";
 
+
+  if (x > 0 ) {
+        cout << "\n\nENTER RECIVER ACCOUNT NO: ";
+        cin >> acno_2;
+        if (acno_1 == acno_2) {
+    cout << "\n SAME ACCOUNT NUMBERS ARE NOT ALLOWED.....";
+    getch();
+    bankmangement(conn);
+  }
+ssss << "select * from banking where account_no = '" + acno_2 + "' ";
   string queryy = ssss.str();
   const char * qq = queryy.c_str();
   mysql_query(conn, qq);
@@ -1130,7 +1128,9 @@ string bank::transfer_amt(MYSQL * conn) {
   count = mysql_num_fields(ress);
   my_ulonglong xx = mysql_num_rows(ress);
 
-  if (x > 0 && xx > 0) {
+
+        if(xx>0)
+        {
 
     while (row = mysql_fetch_row(res)) {
       while (roww = mysql_fetch_row(ress)) {
@@ -1178,7 +1178,11 @@ string bank::transfer_amt(MYSQL * conn) {
       }
     }
   } else {
-    cout << "\n\nINVALID ACCOUNTS NO....";
+    cout << "\n\nINVALID ACCOUNT NO....";
+
+  }
+  }else {
+    cout << "\n\nINVALID ACCOUNT NO....";
 
   }
 
@@ -1382,17 +1386,22 @@ string bank::depositamt_atm(MYSQL * conn) {
   if (x > 0) {
 
     while (row = mysql_fetch_row(res)) {
-      sst: cout << "\nACCOUNT NO: " << row[1] << "\n NAME: " << row[2];
+      sst:
+      cout << "\nACCOUNT NO: " << row[1] << "\n NAME: " << row[2];
       cout << "\n\nENTER AMOUNT : ";
       cin >> amt;
       if (number_only(amt)) {
         goto pp;
 
       } else {
+        cout<<"ALLOWED ONLY DIGITS....";
+        getch();
+        system("cls");
         goto sst;
       }
 
-      pp: int num1 = stoi(row[6]);
+      pp:
+      int num1 = stoi(row[6]);
       int num3 = stoi(amt);
 
       int ta;
@@ -1414,136 +1423,130 @@ string bank::depositamt_atm(MYSQL * conn) {
 
   } else {
     cout << "\n\nINVALID ACCOUNT NO....";
-
-  }
-
-}
-
-unsigned long _stdcall Timer();
-string bank::withdrawamt_atm(MYSQL * conn) {
-  sa: MYSQL_ROW row;
-  MYSQL_RES * res;
-
-  string acno,
-  pinno;
-  int amt;
-  system("cls");
-  stringstream ss,
-  sss,
-  tt;
-  cout << "\n\nENTER acno: ";
-  cin >> acno;
-  if (number_only(acno)) {
-    goto pps;
-
-  } else {
-
-    goto sa;
-  }
-  pps:
-
-    sss << "select * from banking where account_no = '" + acno + "' ";
-
-  string query = sss.str();
-  const char * q = query.c_str();
-  mysql_query(conn, q);
-  res = mysql_store_result(conn);
-  int count = mysql_num_fields(res);
-  my_ulonglong x = mysql_num_rows(res);
-
-  if (x > 0) {
-
-    while (row = mysql_fetch_row(res)) {
-      cout << "\n\nENTER pinno: ";
-      cin >> pinno;
-
-      if (pinno == row[7]) {
-        ks: cout << "\n" << "\n ACCOUNT NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
-
-           HANDLE hTimer = NULL;
-
-/*unsigned long _stdcall Timer()
-{
-    int nCount = 0;
-    while(nCount < 10)
-    {
-    WaitForSingleObject(hTimer, 5000);
-    nCount++;
-    }
-    cout << "50 secs\n";
-    atmmangement(conn);
-}
-    DWORD tid;
-    hTimer = CreateEvent(NULL, FALSE, FALSE, NULL);
-    CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Timer,NULL,0,&tid);*/
-//CreateThread(NULL, 0, &Timer, NULL, 0, &tid);
-
-        cout << "\n\nENTER AMOUNT : ";
-        //string tau = to_string(amt);
-
-cin>>amt;
-       /* while(cin >> amt)
-    {
-        if(0==amt)
-            SetEvent(hTimer);
-
-    }*/
-    CloseHandle(hTimer);
-       /* if (number_only(tau)) {
-          goto sps;
-
-        } else {
-          cout << "ONLY DIGITS ARE ALLWOED.....";
-          getch();
-          system("cls");
-          goto ks;
-        }
-        sps:
-        int amt = stoi(tau);
-*/
-        if (amt > 10000) {
-          cout << "YOU CAN WITHDRAW ONLY LESS THAN 10000 Rs.";
-          getch();
-          system("cls");
-          goto ks;
-
-        } else {
-          int num1 = stoi(row[6]);
-          if (amt < num1) {
-            int ta;
-            ta = num1;
-            ta -= amt;
-            string tau = to_string(ta);
-            ss << "UPDATE banking SET amount = '" + tau + "' WHERE account_no = '" + acno + "'";
-            string query = ss.str();
-            const char * q = query.c_str();
-            mysql_query(conn, q);
-            PlaySound(TEXT("withdraw.wav"), NULL, SND_SYNC);
-            string sst = to_string(amt);
-            cout << "\n\n\t" << amt << " AMOUNT WITHDRAW SUCESSFULLY.... " << "\n\n\t REMANING AMOUNT IS: " << tau;
-            tt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('" + acno + "', ' ', '" + sst + "', '" + tau + "','ATM')";
-            query = tt.str();
-            q = query.c_str();
-            mysql_query(conn, q);
-          } else {
-            cout << "\n\nLOW BALANCE...." << row[6];
-
-          }
-        }
-      }
-      else {
-        cout << "\n\nINVALID PIN NO......";
-        getch();
-        atmmangement(conn);
-      }
-    }
-
-  } else {
-    cout << "\n\nINVALID ACCOUNT NO....";
     getch();
     atmmangement(conn);
 
   }
+
+}
+
+
+string bank::withdrawamt_atm(MYSQL* conn)
+{
+    sa:
+    MYSQL_ROW row;
+    MYSQL_RES* res;
+    string acno,pinno;
+    int amt;
+    system("cls");
+    stringstream ss,sss,tt;
+    cout<<"\n\nENTER acno: ";
+    cin>>acno;
+     if(number_only(acno))
+    {
+        goto pps;
+
+    }
+    else{
+
+        goto sa;
+    }
+    pps:
+
+
+
+    sss<< "select * from banking where account_no = '"+acno+"' ";
+
+    string query = sss.str();
+    const char* q= query.c_str();
+    mysql_query(conn , q);
+    res = mysql_store_result(conn);
+    int count = mysql_num_fields(res);
+    my_ulonglong x = mysql_num_rows(res);
+
+
+
+
+ if(x>0)
+    {
+
+
+
+
+        while(row = mysql_fetch_row(res)){
+             cout<<"\n\nENTER pinno: ";
+            cin>>pinno;
+
+        if(pinno == row[7]){
+                ks:
+        cout<<"\n"<<"\n ACCOUNT NO: "<<row[1]<<"\n NAME: "<<row[2]<<"\n EMAIL: "<<row[3]<<"\n PHONE NO: "<<row[4]<<"\n AMOUNT: "<<row[6];
+        cout<<"\n\nENTER AMOUNT : ";
+        string tau= to_string(amt);
+
+        cin>>tau;
+        if(number_only(tau))
+        {
+        goto sps;
+
+        }
+        else{
+        cout<<"ONLY DIGITS ARE ALLWOED.....";
+        getch();
+        system("cls");
+        goto ks;
+        }
+        sps:
+        int amt = stoi(tau);
+        if(amt>10000){
+        cout<<"YOU CAN WITHDRAW ONLY LESS THAN 10000 Rs.";
+        getch();
+        system("cls");
+            goto ks;
+
+        }
+        else{
+        int num1 = stoi(row[6]);
+        if(amt<num1)
+        {
+        int ta;
+        ta=num1;
+        ta-=amt;
+        string tau= to_string(ta);
+        ss<<"UPDATE banking SET amount = '"+tau+"' WHERE account_no = '"+acno+"'";
+        string query = ss.str();
+        const char* q= query.c_str();
+        mysql_query(conn , q);
+        PlaySound(TEXT("withdraw.wav"),NULL,SND_SYNC);
+        string sst= to_string(amt);
+        cout<<"\n\n\t"<< amt <<" AMOUNT WITHDRAW SUCESSFULLY.... "<<"\n\n\t REMANING AMOUNT IS: "<<tau;
+        tt<<"INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`bank_or_atm`) VALUES ('"+acno+"', ' ', '"+sst+"', '"+tau+"','ATM')";
+        query = tt.str();
+        q= query.c_str();
+        mysql_query(conn , q);
+         }
+        else{
+               cout<<"\n\nLOW BALANCE...."<<row[6];
+
+
+        }
+        }
+        }
+        else{
+        cout<<"\n\nINVALID PIN NO......";
+            getch();
+              atmmangement(conn);
+        }
+        }
+
+    }
+    else{
+              cout<<"\n\nINVALID ACCOUNT NO....";
+              getch();
+              atmmangement(conn);
+
+
+    }
+
 
 }
 
@@ -1758,10 +1761,13 @@ int main() {
 
   MYSQL * conn = connectdatabase();
   bank obj;
-  HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+  /*HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
   COORD a;
   a.X = 10;
   a.Y = 30;
+  SetConsoleScreenBufferSize(handle, a);*/
+  HWND hwnd = GetConsoleWindow();
+  ShowWindow(hwnd, SW_SHOWMAXIMIZED);
 
   int N = 100;
   for (int i = 0; i < N; i++) {
@@ -1771,7 +1777,6 @@ int main() {
     Sleep(3.3);
   }
   printProgBar(100);
-  SetConsoleScreenBufferSize(handle, a);
   obj.menu(conn);
 }
 
