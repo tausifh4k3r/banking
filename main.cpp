@@ -96,6 +96,24 @@ char key[5] = "abcd";
 }
 /*END DECRYPTED CODE*/
 
+
+void Date()
+{
+    time_t T = time(NULL);
+    struct tm tm = *localtime(&T);
+    cout << "";
+    cout << "\tDate: " << tm.tm_mday << "/" << tm.tm_mon + 1 << "/" << tm.tm_year + 1900 << "\n";
+}
+
+void Time()
+{
+    time_t curr_time;
+    curr_time = time(NULL);
+
+    tm *tm_local = localtime(&curr_time);
+    cout << "Time : " << tm_local->tm_hour << ":" << tm_local->tm_min << ":" << tm_local->tm_sec;
+}
+
       /*RANDOM CHARACTER*/
       string gen_random(const int len) {
 
@@ -114,7 +132,7 @@ char key[5] = "abcd";
 
       }
 
-      /* RANDOM NUMBER*/
+      /* ACCOUNT NO GENERATE CODE*/
 
       string gen_random_num(const int len) {
 
@@ -132,6 +150,85 @@ char key[5] = "abcd";
         return tmp_s;
 
       }
+      /**/
+
+
+/* Trans_id NO GENERATE CODE*/
+
+      string Trans_id_send(const int len) {
+
+        string tmp_s;
+        static
+        const char alphanum[] = "1234567890""256789031";
+
+        srand((unsigned) time(NULL) * getpid());
+
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i)
+          tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+        return tmp_s;
+
+      }
+
+
+      string Trans_id_recive(const int len) {
+
+        string tmp_s;
+        static
+        const char alphanum[] = "7824854265""25678903";
+
+        srand((unsigned) time(NULL) * getpid());
+
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i)
+          tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+        return tmp_s;
+
+      }
+
+
+        string Trans_id_withdraw(const int len) {
+
+        string tmp_s;
+        static
+        const char alphanum[] = "858047567894265""25678903";
+
+        srand((unsigned) time(NULL) * getpid());
+
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i)
+          tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+        return tmp_s;
+
+      }
+
+
+
+       string Trans_id_deposit(const int len) {
+
+        string tmp_s;
+        static
+        const char alphanum[] = "68545876310487""2597109103";
+
+        srand((unsigned) time(NULL) * getpid());
+
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i)
+          tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+
+        return tmp_s;
+
+      }
+
+
+      /*trans id end*/
 
       /* BANK MANAGEMENT FUNCTIONS */
       string menu(MYSQL * conn);
@@ -218,6 +315,8 @@ char key[5] = "abcd";
     string bank::menu(MYSQL * conn) {
       if (conn) {
         p: system("cls");
+        Time();
+        Date();
         MYSQL_ROW row;
         MYSQL_RES * res;
         string email,
@@ -232,8 +331,8 @@ char key[5] = "abcd";
         string choi;
         system("Color 0F");
         cout << "\n\n 1.BANK MANAGEMENT";
-        cout << "\n\n 2.ATM MANAGEMENT";
-        cout << "\n\n 3.EXIT ";
+        //cout << "\n\n 2.ATM MANAGEMENT";
+        cout << "\n\n 2.EXIT ";
         cout << "\n\n ENTER YOUR CHOICE: ";
         cin >> choi;
         if (number_onl(choi)) {
@@ -241,7 +340,7 @@ char key[5] = "abcd";
           goto sd;
         } else {
           system("Color 0C");
-          cout << "\n\nINVALID INPUT PLEASE TRY AGAIN SELECT [1 to 3] BETWEEN  ";
+          cout << "\n\nINVALID INPUT PLEASE TRY AGAIN SELECT [1 and 2] BETWEEN  ";
           PlaySound(TEXT("error.wav"), NULL, SND_SYNC);
 
           getch();
@@ -300,11 +399,11 @@ char key[5] = "abcd";
 
           break;
 
-        case 2:
+       /* case 2:
           atmmangement(conn);
-          break;
+          break;*/
 
-        case 3:
+        case 2:
           exit(0);
 
         default:
@@ -475,7 +574,7 @@ string bank::insertrecord(MYSQL * conn) {
           cout << "\n\nRECORD ALERADY EXIST";
 
           while (row = mysql_fetch_row(resss)) {
-            cout << "\n" << "\n ACCOUTt NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
+            cout << "\n" << "\n ACCOUNT NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
 
           }
           getch();
@@ -1078,7 +1177,10 @@ string bank::insertrecord(MYSQL * conn) {
           const char * q = query.c_str();
           mysql_query(conn, q);
           cout << "\n\n\t" << amt << " AMOUNT DEPOSITED SUCESSFULLY.... " << "\n\n\t REMANING AMOUNT IS: " << tau;
-          tt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('" + acno + "', '" + amt + "', ' ', '" + tau + "','bank')";
+          string trans_id;
+          trans_id = Trans_id_deposit(10);
+
+          tt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`trans_id`,`transaction_mode`) VALUES ('" + acno + "', '" + amt + "', ' ', '" + tau + "','"+trans_id+"','bank')";
           query = tt.str();
           q = query.c_str();
           mysql_query(conn, q);
@@ -1146,7 +1248,7 @@ string bank::insertrecord(MYSQL * conn) {
             mysql_query(conn, q);
             cout << "\n\n\t" << amt << " AMOUNT WITHDRAW SUCESSFULLY.... " << "\n\n\t REMANING AMOUNT IS: " << tau;
 
-            tt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('" + acno + "', ' ', '" + amt + "', '" + tau + "','bank')";
+            tt << "INSERT INTO `trans_hist` (`trans_id`,`accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('"+Trans_id_withdraw(10)+"', '" + acno + "', ' ', '" + amt + "', '" + tau + "','bank')";
             query = tt.str();
             q = query.c_str();
             mysql_query(conn, q);
@@ -1244,15 +1346,17 @@ string bank::transfer_amt(MYSQL * conn) {
 
               cout << "\n\nMONEY TRANSFERED SUCESSFULLY....";
 
-              tt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('" + acno_1 + "', ' ', '" + amt + "', '" + tau + "', 'send " + acno_2 + "')";
+              tt << "INSERT INTO `trans_hist` ( `trans_id`, `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('"+Trans_id_send(10)+"', '" + acno_1 + "', ' ', '" + amt + "', '" + tau + "', 'send " + acno_2 + "')";
               query = tt.str();
               q = query.c_str();
               mysql_query(conn, q);
+              cout<<"hello";
 
-              ttt << "INSERT INTO `trans_hist` ( `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('" + acno_2 + "', '" + amt + "', ' ', '" + taus + "','recieve " + acno_1 + "')";
+              ttt << "INSERT INTO `trans_hist` (`trans_id`, `accno`, `deposit_amt`, `withdraw_amt`,`remain_amt`,`transaction_mode`) VALUES ('"+Trans_id_recive(10)+"', '" + acno_2 + "', '" + amt + "', ' ', '" + taus + "','recieve " + acno_1 + "')";
               query = ttt.str();
               q = query.c_str();
               mysql_query(conn, q);
+              cout<<"het";
 
             } else {
               cout << "\n\nLOW BALANCE...." << row[6];
@@ -1298,10 +1402,10 @@ string bank::transfer_amt(MYSQL * conn) {
 
       if (x > 0) {
 
-        cout << "\n" << "ACCOUNT NO " << setw(10) << "DEPOSIT" << setw(20) << "WITHDRAW" << "\t" << "REMAIN AMT" << "\t" << "LOCATION" << setw(50) << "DATE AND TIME";
+        cout << "\n" << "Trans_id" << "\t\t"<< "ACCOUNT NO " << setw(15) << "DEPOSIT" << setw(25) << "WITHDRAW" << "\t" << "REMAIN AMT" << "\t" << "LOCATION" << setw(30) << "DATE AND TIME";
 
         while (row = mysql_fetch_row(res)) {
-          cout << "\n" << row[1] << setw(10) << row[2] << setw(20) << row[3] << "\t\t" << row[4] << "\t\t" << row[5] << setw(50) << row[6];
+          cout << "\n"<< row[0] << "\t\t" << row[1] << setw(20) << row[2] << setw(20) << row[3] << "\t\t" << row[4] << "\t\t" << row[5] << setw(30) << row[6];
 
         }
 
@@ -1376,7 +1480,7 @@ string bank::transfer_amt(MYSQL * conn) {
 /* end transaction history download */
 
 
-/*ATM MANAGEMENT LOGIC */
+/*ATM MANAGEMENT LOGIC
     string bank::atmmangement(MYSQL * conn) {
       if (conn) {
         p: string choice;
@@ -1452,7 +1556,7 @@ string bank::transfer_amt(MYSQL * conn) {
 
     }
 
-/* deposit amount function atm */
+/* deposit amount function atm
     string bank::depositamt_atm(MYSQL * conn) {
       MYSQL_ROW row;
       MYSQL_RES * res;
@@ -1517,9 +1621,9 @@ string bank::transfer_amt(MYSQL * conn) {
       }
 
     }
-    /* end deposit amount*/
+    end deposit amount*/
 
-/* withdraw amount function atm */
+/* withdraw amount function atm
     string bank::withdrawamt_atm(MYSQL* conn)
 {
     sa:
@@ -1560,6 +1664,8 @@ string bank::transfer_amt(MYSQL * conn) {
     {
 
          while(row = mysql_fetch_row(res)){
+        bool s;
+        s= row[10];
             cout<<"\n\nENTER pinno: ";
             cin>>pinno;
             pindec = unencrypted(row[7]);
@@ -1639,7 +1745,8 @@ string bank::transfer_amt(MYSQL * conn) {
             getch();
               atmmangement(conn);
         }
-        }
+            }
+
 
     }
     else{
@@ -1653,9 +1760,9 @@ string bank::transfer_amt(MYSQL * conn) {
 
 }
 
-  /* end withdraw amount */
+   end withdraw amount */
 
-/* check balance function */
+/* check balance function
     string bank::checkbalance(MYSQL * conn) {
       MYSQL_ROW row;
       MYSQL_RES * res;
@@ -1845,6 +1952,8 @@ string bank::transfer_amt(MYSQL * conn) {
 
       }
     }
+
+*/
 
     void gotoxy(int x, int y) {
       COORD d;
