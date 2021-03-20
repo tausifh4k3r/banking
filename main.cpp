@@ -1278,7 +1278,8 @@ string bank::update_address(MYSQL * conn)
     }
     else
     {
-        cout << "ERROR";
+
+        cout << "\n INVALID ACCOUNT NO....";
 
     }
 }
@@ -1288,19 +1289,29 @@ string bank::update_address(MYSQL * conn)
 
 string bank::showspecificrecord(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
-    int acno;
+    string acno;
     int amt;
     system("cls");
     stringstream ss, sss;
     cout << "\n\nENTER acno: ";
     cin >> acno;
-    string str = to_string(acno);
+    if(number_only(acno))
+    {
+        goto  nex;
 
-    sss << "select * from banking where account_no = '" + str + "' OR adharcardnum = '"+str+"'";
-
+    }
+    else{
+        cout<<"Account no should be only Digit";
+        getch();
+        system("cls");
+        goto bak;
+    }
+    nex:
+    sss << "select * from banking where account_no = '" + acno + "' OR adharcardnum = '"+acno+"'";
     string query = sss.str();
     const char * q = query.c_str();
     mysql_query(conn, q);
@@ -1320,7 +1331,7 @@ string bank::showspecificrecord(MYSQL * conn)
     }
     else
     {
-        cout << "ERROR";
+        cout << "\n ACCOUNT NO DOES NOT EXIST.....";
 
     }
 
@@ -1330,6 +1341,7 @@ string bank::showspecificrecord(MYSQL * conn)
 /* deposit amount function bank */
 string bank::depositamt(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
@@ -1340,8 +1352,18 @@ string bank::depositamt(MYSQL * conn)
     stringstream ss, sss, tt;
     cout << "\n\nENTER acno: ";
     cin >> acno;
+    if(number_only(acno))
+    {
+            goto nex;
+    }
+    else{
+        cout<<"\nAccount no should be contain only digit....";
+        getch();
+        system("cls");
+        goto bak;
+    }
+    nex:
     sss << "select * from banking where account_no  = '" + acno + "' ";
-
     string query = sss.str();
     const char * q = query.c_str();
     mysql_query(conn, q);
@@ -1365,6 +1387,9 @@ sst:
             }
             else
             {
+                cout<<"\nOnly Numeric Value Are Allowed...";
+                getch();
+                system("cls");
                 goto sst;
             }
 
@@ -1404,6 +1429,7 @@ pp:
 
 string bank::withdrawamt(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
@@ -1413,6 +1439,17 @@ string bank::withdrawamt(MYSQL * conn)
     stringstream ss, sss, tt;
     cout << "\n\nENTER acno: ";
     cin >> acno;
+    if(number_only(acno))
+    {
+        goto nex;
+    }
+    else{
+    cout<<"Account no should be Only Digit....";
+    getch();
+    system("cls");
+    goto bak;
+    }
+    nex:
 
     sss << "select * from banking where account_no = '" + acno + "' ";
 
@@ -1532,7 +1569,7 @@ string bank::transfer_amt(MYSQL * conn)
         ress = mysql_store_result(conn);
         count = mysql_num_fields(ress);
         my_ulonglong xx = mysql_num_rows(ress);
-
+        bak:
 
         if(xx>0)
         {
@@ -1544,6 +1581,17 @@ string bank::transfer_amt(MYSQL * conn)
 
                     cout << "\n\nENTER AMOUNT : ";
                     cin >> amt;
+                    if(number_only(amt))
+                    {
+
+                        goto nex;
+                    }
+                    else{
+                        cout<<"\nOnly Numeric value are Accepted....";
+                        system();
+                        goto bak;
+                    }
+                    nex:
 
                     int num1 = stoi(row[6]);
                     int num3 = stoi(roww[6]);
