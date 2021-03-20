@@ -251,7 +251,7 @@ public:
     string withdrawamt(MYSQL * conn);
     string transfer_amt(MYSQL * conn);
     string update_name(MYSQL * conn);
-    string update_adhar(MYSQL * conn);
+    //string update_adhar(MYSQL * conn);
     string update_mobno(MYSQL * conn);
     string update_email(MYSQL * conn);
     string update_address(MYSQL * conn);
@@ -259,7 +259,7 @@ public:
     string trans_hist_download(MYSQL * conn);
     /* END */
 
-    /* ATM MANAGEMENT FUNCTION*/
+    /* ATM MANAGEMENT FUNCTION
     string checkbalance(MYSQL * conn);
     string withdrawamt_atm(MYSQL * conn);
     string changepin_atm(MYSQL * conn);
@@ -275,11 +275,11 @@ public:
         return regex_match(email, pattern);
     }
 
-    bool number(string number)
+    bool number_adhar(string number_adhar)
     {
         //const regex pattern("[-+]?([0-9]*\.[0-9]+|[0-9]+)");
         const regex pattern("^[0-9]{4}$");
-        return regex_match(number, pattern);
+        return regex_match(number_adhar, pattern);
     }
 
     bool number_only(string number_only)
@@ -570,11 +570,6 @@ on:
     string adhar,email,acc_type,address,phoneno;
     string amount,pins,adhard;
     stringstream ss,sss,ssss;
-
-    accno = gen_random_num(5);
-
-    cout << "\n\n NEW ACCOUNT NO IS Generated : " << accno;
-    getch();
     system("cls");
     sss << "select * from banking where account_no  = '" + accno + "' ";
     string query = sss.str();
@@ -591,12 +586,17 @@ on:
     }
     else
     {
+        accno = gen_random_num(5);
+        cout << "\n\n NEW ACCOUNT NO IS Generated : " << accno;
+        getch();
+        system("cls");
+
 onn2:
 
         cout << "\n\nENTER ADHAAR CARD NUMBER: ";
         cin>>adhar;
 
-        if (number(adhar))
+        if (number_adhar(adhar))
         {
             goto sss3;
         }
@@ -874,11 +874,11 @@ p:
     system("cls");
     system("Color 0F");
     cout << "\n\n 1. UPDATE NAME";
-    cout << "\n\n 2. UPDATE ADHAAR NUMBER ";
-    cout << "\n\n 3. UPDATE PHONE NUMBER ";
-    cout << "\n\n 4. UPDATE ADDRESS ";
-    cout << "\n\n 5. UPDATE EMAIL ";
-    cout << "\n\n 6. GO BACK ";
+//    cout << "\n\n 2. UPDATE ADHAAR NUMBER ";
+    cout << "\n\n 2. UPDATE PHONE NUMBER ";
+    cout << "\n\n 3. UPDATE ADDRESS ";
+    cout << "\n\n 4. UPDATE EMAIL ";
+    cout << "\n\n 5. GO BACK ";
 
     cout << "\n\n\t WHICH RECORD YOU HAVE UPDATED PLEASE SELECT: ";
     cin >> choice;
@@ -903,23 +903,23 @@ sd:
         update_name(conn);
         break;
 
-    case 2:
+    /*case 2:
         update_adhar(conn);
-        break;
+        break;*/
 
-    case 3:
+    case 2:
         update_mobno(conn);
         break;
 
-    case 4:
+    case 3:
         update_address(conn);
         break;
 
-    case 5:
+    case 4:
         update_email(conn);
         break;
 
-    case 6:
+    case 5:
         bankmangement(conn);
         break;
 
@@ -942,6 +942,7 @@ sd:
 
 string bank::update_name(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
@@ -951,6 +952,22 @@ string bank::update_name(MYSQL * conn)
     system("cls");
     cout << "\n\nENTER USER ACCOUNT NO: ";
     cin >> acno;
+    if(number_only(acno))
+    {
+        goto nex;
+
+    }else{
+        cout<<"\n Account no should be digit";
+        getch();
+        system("cls");
+        goto bak;
+
+    }
+
+
+
+    nex:
+
     sss << "select * from banking where account_no = '" + acno + "' ";
     string query = sss.str();
     const char * q = query.c_str();
@@ -1001,7 +1018,7 @@ p:
 /*end update name*/
 
 /*update adhar function */
-string bank::update_adhar(MYSQL * conn)
+/*string bank::update_adhar(MYSQL * conn)
 {
     MYSQL_ROW row;
     MYSQL_RES * res;
@@ -1059,9 +1076,11 @@ s:
 }
 /* end update adhar */
 
+
 /*update mobile number function*/
 string bank::update_mobno(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
@@ -1069,6 +1088,20 @@ string bank::update_mobno(MYSQL * conn)
     stringstream ss, sss;
     cout << "\n\nENTER ACCOUNT NO: ";
     cin >> acno;
+    if(number_only(acno))
+    {
+        goto nex;
+
+    }
+    else{
+        cout<<"\nAccount No should be Only Digit.....";
+        getch();
+        system("cls");
+        goto bak;
+    }
+
+    nex:
+
     sss << "select * from banking where account_no = '" + acno + "' ";
 
     string query = sss.str();
@@ -1124,6 +1157,7 @@ sa:
 
 string bank::update_email(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
 
@@ -1131,6 +1165,19 @@ string bank::update_email(MYSQL * conn)
     stringstream ss, sss;
     cout << "\n\nENTER ACCOUNT NO: ";
     cin >> acno;
+    if(number_only(acno))
+    {
+        goto nex;
+
+    }
+    else{
+        cout<<"\nAccount No Should be only Digit.....";
+        getch();
+        system("cls");
+        goto bak;
+    }
+
+    nex:
     sss << "select * from banking where account_no = '" + acno + "' ";
 
     string query = sss.str();
@@ -1183,17 +1230,28 @@ as:
 
 string bank::update_address(MYSQL * conn)
 {
+    bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
-
     string acno;
     stringstream ss, sss;
     string address_upd;
     system("cls");
     cout << "\n\nENTER ACCOUNT NUMBER: ";
     cin >> acno;
-    sss << "select * from banking where account_no = '" + acno + "' ";
+    if(number_only(acno))
+    {
+        goto nex;
 
+    }
+    else{
+        cout<<"\nAccount no should be only Digit.....";
+        getch();
+        system("cls");
+        goto bak;
+    }
+    nex:
+    sss << "select * from banking where account_no = '" + acno + "' ";
     string query = sss.str();
     const char * q = query.c_str();
     mysql_query(conn, q);
