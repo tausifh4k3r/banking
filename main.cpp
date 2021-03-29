@@ -257,6 +257,7 @@ public:
     string update_address(MYSQL * conn);
     string trans_hist(MYSQL * conn);
     string trans_hist_download(MYSQL * conn);
+
     /* END */
 
     /* ATM MANAGEMENT FUNCTION
@@ -570,6 +571,7 @@ on:
     string adhar,email,acc_type,address,phoneno;
     string amount,pins,adhard;
     stringstream ss,sss,ssss;
+    ofstream file;
     system("cls");
     sss << "select * from banking where account_no  = '" + accno + "' ";
     string query = sss.str();
@@ -737,6 +739,26 @@ tt22:
             {
 
                 cout << "\n\nRECORD INSERTED SUCESSFULL";
+                cout<<"\n\nPLEASE WAIT YOUR PASSBOOK IS PRINTED.....";
+        for (int i = 0; i < 3; i++)
+        {
+
+            for (int i = 0; i < 2; i++)
+            {
+                Sleep(1000);
+                cout << ".";
+
+            }
+
+        }
+                string att = "new_passbooks/" " " + name + " " + gen_random(2) += ".doc";
+                file.open(att);
+                file<<"TAUSIF AND SUPRIYA BANK"<<endl;
+                file<<"ACCNO:"<<accno<<"\n";
+                file<<"NAME:"<<name<<"\n";
+                file<<"ADHAR NUMBER:"<<adhar<<"\n";
+                file<<"THANK YOU.. ";
+
             }
             else
             {
@@ -772,7 +794,7 @@ tt22:
         if(qstate==0)
         {
 
-            cout<<"RECORD INSERTED SUCESSFULL";
+            cout<<"RECORD DFED SUCESSFULL";
         }
         else
         {
@@ -781,7 +803,7 @@ tt22:
     */
 
 }
-/*insert record End*/
+/*DF record End*/
 
 
 /* show all record function*/
@@ -805,7 +827,17 @@ string bank::displayrecords(MYSQL * conn)
                 }*/
                 adharde = unencrypted(row[9]);
                 pinde = unencrypted(row[7]);
-                cout << row[0]<<"\t"<< row[1]<<"\t"<< row[2] << "\t" << row[3] << "\t" << row[4]<< "\t" << row[5]<< "\t" << row[6]<< "\t" << pinde << "\t" << row[8]<< "\t" << adharde << "\t" << row[10]<<endl;
+                cout << row[0]<<setw(10);
+                cout<< row[1]<<setw(20);
+                cout<< row[2] << setw(30) ;
+               cout<<row[3] << setw(20);
+               cout<< row[4]<< setw(10);
+               cout<< row[5]<< setw(15);
+               cout<< row[6]<< setw(15);
+               cout<< pinde << setw(15);
+               cout<<row[8]<< setw(15);
+               cout<< adharde << setw(25);
+               cout << row[10]<<endl;
                 cout << endl;
             }
 
@@ -827,6 +859,7 @@ string bank::deleterecord(MYSQL * conn)
 
     string accno;
     stringstream ss, sss,sssw;
+    char choice;
     cout << "\n\nENTER ACCOUNT NO : ";
     cin >> accno;
     sss << "select * from banking where account_no = '" + accno + "' ";
@@ -842,7 +875,10 @@ string bank::deleterecord(MYSQL * conn)
         while (row = mysql_fetch_row(res))
         {
             cout << "\n" << "\n ACCOUTt NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
-
+            cout<<"DO YOU WANT TO DELETE (Y/N): ";
+            cin>>choice;
+            if(choice == 'Y' ||choice == 'y' ||choice == 'yes' ||choice == 'YES'  )
+            {
             ss << "DELETE FROM `banking` WHERE account_no='" + accno + "' ";
             string query = ss.str();
             const char * q = query.c_str();
@@ -854,6 +890,10 @@ string bank::deleterecord(MYSQL * conn)
             mysql_query(conn, wq);
             //ss<<"DELETE FROM hacker WHERE name='"+name+"'";
             cout << "\n\nRECORD DELETED SUCESSFULLY" << row[2];
+        }else
+        {
+            bankmangement(conn);
+        }
         }
 
     }
@@ -1292,12 +1332,14 @@ string bank::showspecificrecord(MYSQL * conn)
     bak:
     MYSQL_ROW row;
     MYSQL_RES * res;
+    MYSQL_RES * ress;
+
 
     string acno;
     int amt;
     system("cls");
-    stringstream ss, sss;
-    cout << "\n\nENTER acno: ";
+    stringstream ss, sss,ssst;
+    cout << "\n\nENTER acno or adharcardnum : ";
     cin >> acno;
     if(number_only(acno))
     {
@@ -1311,7 +1353,10 @@ string bank::showspecificrecord(MYSQL * conn)
         goto bak;
     }
     nex:
-    sss << "select * from banking where account_no = '" + acno + "' OR adharcardnum = '"+acno+"'";
+
+
+
+    sss << "select * from banking where account_no = '" + acno + "' ";
     string query = sss.str();
     const char * q = query.c_str();
     mysql_query(conn, q);
@@ -1319,7 +1364,17 @@ string bank::showspecificrecord(MYSQL * conn)
     int count = mysql_num_fields(res);
     my_ulonglong x = mysql_num_rows(res);
 
-    if (x > 0)
+    string sas = unencrypted(acno);
+    ssst << "select * from banking where adharcardnum = '" + sas + "'";
+    query = ssst.str();
+    const char * qq = query.c_str();
+    mysql_query(conn, qq);
+    ress = mysql_store_result(conn);
+    count = mysql_num_fields(ress);
+    my_ulonglong xx = mysql_num_rows(ress);
+
+
+    if ( x > 0  )
     {
 
         while (row = mysql_fetch_row(res))
@@ -1328,6 +1383,15 @@ string bank::showspecificrecord(MYSQL * conn)
 
         }
 
+    }
+    else if(xx > 0)
+    {
+
+        while (row = mysql_fetch_row(ress))
+        {
+            cout << "\n ID: " << row[0] << "\n ACCOUTt NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
+
+        }
     }
     else
     {
@@ -1436,6 +1500,7 @@ string bank::withdrawamt(MYSQL * conn)
     string acno;
     string amt;
     system("cls");
+    char choice;
     stringstream ss, sss, tt;
     cout << "\n\nENTER acno: ";
     cin >> acno;
@@ -1466,7 +1531,13 @@ string bank::withdrawamt(MYSQL * conn)
         while (row = mysql_fetch_row(res))
         {
 as:
-            cout << "\n ID: " << row[0] << "\n ACCOUNT NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6];
+            string s ;
+            s = unencrypted(row[9]);
+            cout << "\n ID: " << row[0] << "\n ACCOUNT NO: " << row[1] << "\n NAME: " << row[2] << "\n EMAIL: " << row[3] << "\n PHONE NO: " << row[4] << "\n AMOUNT: " << row[6] << "\n ADDHAR CARD NO: "<<s;
+            cout<<"\n\n ACCOUNT IS VALID: PRESS (Y/N): ";
+            cin>>choice;
+            if(choice == 'y' || choice == 'Y' || choice == 'yes' || choice=='YES' )
+            {
             cout << "\n\nENTER AMOUNT : ";
             cin >> amt;
             if (number_only(amt))
@@ -1509,6 +1580,9 @@ n:
                 cout << "\n\nLOW BALANCE...." << row[6];
 
             }
+        }else{
+            bankmangement(conn);
+        }
         }
 
     }
@@ -1588,7 +1662,7 @@ string bank::transfer_amt(MYSQL * conn)
                     }
                     else{
                         cout<<"\nOnly Numeric value are Accepted....";
-                        system();
+                        system("cls");
                         goto bak;
                     }
                     nex:
@@ -1685,7 +1759,7 @@ string bank::trans_hist(MYSQL * conn)
 
         while (row = mysql_fetch_row(res))
         {
-            cout << "\n"<< row[0] << "\t\t" << row[1] << setw(20) << row[2] << setw(20) << row[3] << "\t\t" << row[4] << "\t\t" << row[5] << setw(30) << row[6];
+            cout << "\n"<< row[0] << "\t\t" << row[1] << setw(20) << row[2] << setw(20) << row[3] << "\t\t" << row[4] << setw(20) << row[5] << setw(30) << row[6];
 
         }
 
@@ -1705,16 +1779,19 @@ string bank::trans_hist_download(MYSQL * conn)
 
     MYSQL_ROW row;
     MYSQL_RES * res;
+    MYSQL_RES * ress;
+
 
     string acno;
     fstream file;
     system("cls");
-    stringstream ss, sss;
+    stringstream ss, sss,ssss;
     cout << "\n\nENTER acno: ";
     cin >> acno;
 
     //string str= to_string(acno);
     sss << "select * from trans_hist where accno = '" + acno + "' ";
+
 
     string query = sss.str();
     const char * q = query.c_str();
@@ -1722,24 +1799,39 @@ string bank::trans_hist_download(MYSQL * conn)
     res = mysql_store_result(conn);
     int count = mysql_num_fields(res);
     my_ulonglong x = mysql_num_rows(res);
-    srand((unsigned) time(0));
 
+    //string str= to_string(acno);
+   /* sss << "select * from banking where name = '" + acno + "' ";
+    string  queryy = ssss.str();
+    const char * qq = queryy.c_str();
+    mysql_query(conn, qq);
+    ress = mysql_store_result(conn);
+    count = mysql_num_fields(ress);
+    my_ulonglong xx = mysql_num_rows(ress);*/
+
+
+    srand((unsigned) time(0));
     time_t now = time(0);
     char * dt = ctime( & now);
 
     string att = "transction/"
-                 " " + acno + " " + gen_random(2) += ".doc";
+                 " " + acno + " " + gen_random(2) += ".txt";
     file.open(att, ios:: in );
 
     if (x > 0)
     {
         file.open(att, ios::app | ios::out);
-        file << dt << "\n\n\n";
-        file << "\n" << "accno " << setw(10) << "dep" << setw(20) << "withdraw" << "\t" << "remain_amt" << "\t" << "mode" << "\t\t" << "DATE_TIME\n\n";
+        file<<dt<<"\n\n\n";
+        file<<x<<"\n\n\n";
+
+
+        file << "\n" << "|accno| " << setw(10) << "|dep|" << setw(20) << "|withdraw|" << "\t" << "|remain_amt|" << "\t" << "|mode|" << "\t\t" << "|DATE_TIME|\n\n";
+
 
         while (row = mysql_fetch_row(res))
         {
-            file<< row[1] << " \t" << row[2] << "\t   " << row[3] << "\t\t" << row[4] << "\t\t" << row[5] << "\t\t" << row[6] << "\n";
+
+            file<< row[1] << " \t" << row[2] << " \t   " << row[3] << "\t\t" << row[4] << "\t\t" << row[5] << "\t\t" << row[6] << "\n";
 
         }
         cout << "PLEASE WAIT YOUR FILE DOWNLOADING";
